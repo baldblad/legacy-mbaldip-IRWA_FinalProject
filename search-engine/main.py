@@ -9,17 +9,9 @@ import dataCleaning as dC
 import ranking
 import utils
 
-# Not needed if using a database
-'''# IMPORTS: Twitter Scrapping #
-from tweepy.streaming import StreamListener
-from tweepy import OAuthHandler
-from tweepy import Stream
-from tweepy import API
-from tweepy import Cursor
-import json'''
-
 # PATHS MANAGING
-cwd = os.getcwd() # get current working directory
+#cwd = os.getcwd() # get current working directory
+generalPath = './'
 SEpath = './search-engine' # path to the search engine code
 
 # global functions
@@ -30,7 +22,7 @@ def main():
     # read tweets database
     global df
     try:
-        df = pd.read_csv(os.path.join(SEpath,"database/df_tweets_clean.csv") )
+        df = pd.read_csv(os.path.join(generalPath,"database/df_tweets_clean.csv") )
     except:
         print("Database is missing or unaccessible.")
         print("Shuting down the search engine.")
@@ -45,6 +37,7 @@ def main():
     clear()
     while True:
         print('\n\nWELCOME TO THE US ELECTIONS SEARCH ENGINE\n')
+        use_custom = input('Do you want to search with custom score?(y/n) ')
         query = input('What do you want to know about? ')
 
         # Clean the query to process:
@@ -58,7 +51,7 @@ def main():
                 dfq, pop_scores, sim_scores = out
 
                 # display the results
-                utils.display_result(dfq, sim_scores, pop_scores, query)
+                utils.display_result(dfq, sim_scores, pop_scores, query, use_custom)
 
         # ask quit condition and clean:
         answ = input('\n\nDo you want to search again?(y/n) ')
