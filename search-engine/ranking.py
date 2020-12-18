@@ -2,7 +2,9 @@ import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-def create_inverted_index(df):   
+def create_inverted_index(df):
+    '''Iterates through the documents to build an inverted index.
+    The inverted index is returned'''
     inverted_index = {}
     for _, tweet in df.iterrows():
         for word in tweet['cleaned_text'].split():
@@ -13,6 +15,8 @@ def create_inverted_index(df):
     return inverted_index
 
 def filter_index(inverted_index, queue):
+    '''Given an inverted index and a queue, uses queue as keys and 
+    retrieves a list of documents from the inverted index.'''
     tweets_to_show = set()
     for word in queue.split():
         try:
@@ -26,6 +30,7 @@ def filter_index(inverted_index, queue):
     return list(tweets_to_show)
 
 def computeTfidfSimilarities(tweets_to_show, query, df):
+    '''Computes the query-document similarities using TF-IDF'''
     
     tweets_to_rank = df[df['id'].isin(tweets_to_show)]['cleaned_text']
     X = tweets_to_rank.append(pd.Series(query), ignore_index=True)
@@ -47,12 +52,17 @@ def computeTfidfSimilarities(tweets_to_show, query, df):
     return doc_simi
 
 def computePopularityScore(tweets_to_show, df):
+    '''Computes the custom score based on the popularity of the tweet.
+    The popularity is assessed by a weighted sum of the fields:
+    ['quote_count','reply_count','retweet_count','favorite_count']'''
     dfn = df[df['id'].isin(tweets_to_show)][['id','quote_count','reply_count','retweet_count','favorite_count']]
     dfn['pop_score'] = 0.5*(dfn['quote_count']+dfn['retweet_count'])+0.3*dfn['favorite_count']+0.2*dfn['reply_count']
     dfn['pop_score'] = dfn['pop_score']/max(dfn['pop_score'].values)
     return dfn.drop(columns=['retweet_count','favorite_count'])
 
 def runDocumentsScores(inverted_index, query, df):
+    '''Master function that calls the different scoring functions.
+    Returns the original data, and the two scores computed.'''
     # filter documents by query using the inverted index
     tweets_to_show = filter_index(inverted_index, query)
     if len(tweets_to_show)==0:

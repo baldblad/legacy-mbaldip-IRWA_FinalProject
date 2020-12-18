@@ -1,3 +1,6 @@
+'''Main module that calls the functions to run the search engine
+'''
+
 # GENERAL IMPORTS #
 import pandas as pd
 import numpy as np
@@ -10,7 +13,7 @@ import ranking
 import utils
 
 # PATHS MANAGING
-#cwd = os.getcwd() # get current working directory
+cwd = os.getcwd() # get current working directory
 generalPath = './'
 SEpath = './search-engine' # path to the search engine code
 
@@ -50,7 +53,7 @@ def main():
             if out:
                 dfq, pop_scores, sim_scores = out
 
-                # display the results
+                # display the results and interactive to explore them
                 utils.display_result(dfq, sim_scores, pop_scores, query, use_custom)
 
         # ask quit condition and clean:
